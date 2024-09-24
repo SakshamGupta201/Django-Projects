@@ -1,6 +1,9 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+
+from todo.models import Todo
 # Create your views here.
 
 
@@ -32,5 +35,13 @@ def login_view(request):
     return redirect('login')
 
 
+@login_required
 def home(request):
-    return render(request, "todo.html")
+    if request.method == "POST":
+        title = request.POST.get("title")
+        todo = Todo.objects.create(title=title, user=request.user)
+    todos = Todo.objects.all().order_by('-date')
+    context = {
+        "todos": todos
+    }
+    return render(request, "todo.html", context)
