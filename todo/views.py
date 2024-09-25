@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -39,9 +39,33 @@ def login_view(request):
 def home(request):
     if request.method == "POST":
         title = request.POST.get("title")
-        todo = Todo.objects.create(title=title, user=request.user)
-    todos = Todo.objects.all().order_by('-date')
+        Todo.objects.create(title=title, user=request.user)
+    todos = Todo.objects.filter(user=request.user).order_by('-date')
     context = {
         "todos": todos
     }
     return render(request, "todo.html", context)
+
+
+@login_required
+def edit_todo(request, pk):
+    todo = get_object_or_404(Todo, sno=pk)
+
+    if request.method == "POST":
+        title = request.POST.get("title")
+        if title:
+            todo.title = title
+            todo.save()
+
+    context = {
+        "obj": todo,
+        'todos': Todo.objects.filter(user=request.user)().order_by('-date')
+    }
+
+    return render(request, "edit_todo.html", context)
+
+@login_required
+def delete_todo(request, pk):
+    todo = get_object_or_404(Todo, sno=pk)
+    todo.delete()
+    return redirect('home')

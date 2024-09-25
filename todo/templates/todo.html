@@ -55,8 +55,8 @@
         <p class="{% if todo.status %} completed {% endif %}">{{todo.title}}</p>
 
         <div>
-          <a href=" /edit_todo/{{todo.srno}} "><i class="fa-solid fa-pen-to-square"></i></a>
-          <a href=" /delete_todo/{{todo.srno}} "><i class="fa-solid fa-trash"></i></a>
+          <a href=" {% url 'edit_todo' todo.sno %} "><i class="fa-solid fa-pen-to-square"></i></a>
+          <a href=" {% url 'delete_todo' todo.sno %} "><i class="fa-solid fa-trash"></i></a>
         </div>
       </div>
 
